@@ -30,6 +30,6 @@ export const Button = styled("button", {
     },
   },
   defaultVariants: {
-    size: "md",
+    size: "sm",
   },
 });

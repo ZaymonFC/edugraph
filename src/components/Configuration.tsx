@@ -1,27 +1,13 @@
 import { useSetAtom } from "jotai/react";
-import { atomWithStorage } from "jotai/utils";
 import { useState } from "react";
 import { Button } from "./BasicButton";
 import { styled } from "../Stitches";
 import { TextInput } from "./TextInput";
+import { keyAtom } from "../lib/Configuration";
 
-const keyAtom = atomWithStorage<string | undefined>(
-  "open-ai-api-key",
-  undefined
-);
-
-const Stack = styled("div", {
-  padding: "$3",
-  display: "flex",
-  flexDirection: "column",
-
-  gap: "$3",
-});
-
-const CaptureContainer = styled("div", {
+export const FieldSet = styled("fieldset", {
   padding: "$5",
 
-  maxWidth: "400px",
   margin: "0 auto",
 
   backgroundColor: "rgba(0, 0, 0, 0.2)",
@@ -29,7 +15,7 @@ const CaptureContainer = styled("div", {
   border: "2px solid rgb(241, 200, 146)",
 });
 
-export function CaptureApiKey() {
+export function Configuration() {
   const setKey = useSetAtom(keyAtom);
 
   const [value, setValue] = useState("");
@@ -40,14 +26,16 @@ export function CaptureApiKey() {
   };
 
   return (
-    <CaptureContainer>
-      <Stack>
-        <p>Configuration</p>
-        <TextInput value={value} onChange={(e) => setValue(e.target.value)} />
-        <Button size="sm" onClick={onUpdate}>
-          Update API Key
-        </Button>
-      </Stack>
-    </CaptureContainer>
+    <FieldSet>
+      <legend>Configuration</legend>
+      <TextInput
+        placeholder="xxx-xxx-xxx-xxx-xxx-xxx-xxx-xxx"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      <Button size="sm" onClick={onUpdate}>
+        Update API Key
+      </Button>
+    </FieldSet>
   );
 }

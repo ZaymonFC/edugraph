@@ -18,10 +18,6 @@ export function completion(key: string, messages: ChatMessage[]) {
     }),
   })
     .then((response) => response.json())
-    .then((data) => {
-      // Process the response data
-      console.log(data);
-    })
     .catch((error) => {
       // Handle any errors
       console.error(error);
