@@ -1,9 +1,17 @@
+import * as Dialog from "@radix-ui/react-dialog";
 import { useSetAtom } from "jotai/react";
 import { useState } from "react";
-import { Button } from "./BasicButton";
 import { styled } from "../Stitches";
-import { TextInput } from "./TextInput";
 import { keyAtom } from "../lib/Configuration";
+import { Button } from "./BasicButton";
+import { TextInput } from "./TextInput";
+import {
+  DialogContent,
+  DialogOverlay,
+  DialogTitle,
+  Fieldset,
+  Label,
+} from "./UI"; // import your styled components from the correct file
 
 export const FieldSet = styled("fieldset", {
   padding: "$5",
@@ -15,27 +23,42 @@ export const FieldSet = styled("fieldset", {
   border: "2px solid rgb(241, 200, 146)",
 });
 
-export function Configuration() {
+export const ConfigurationDialog = () => {
   const setKey = useSetAtom(keyAtom);
-
   const [value, setValue] = useState("");
 
   const onUpdate = () => {
+    console.log("Setting Key", value);
     setKey(value);
     setValue("");
   };
 
   return (
-    <FieldSet>
-      <legend>Configuration</legend>
-      <TextInput
-        placeholder="xxx-xxx-xxx-xxx-xxx-xxx-xxx-xxx"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
-      <Button size="sm" onClick={onUpdate}>
-        Update API Key
-      </Button>
-    </FieldSet>
+    <Dialog.Root>
+      <Dialog.Trigger asChild>
+        <Button>Open Configuration</Button>
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <DialogOverlay />
+        <DialogContent>
+          <DialogTitle>Configuration</DialogTitle>
+          <Fieldset>
+            <Label htmlFor="apiKey">API Key</Label>
+            <TextInput
+              placeholder="xxx-xxx-xxx-xxx-xxx-xxx-xxx-xxx"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+            />
+          </Fieldset>
+          <Dialog.DialogClose asChild>
+            <Button size="sm" onClick={onUpdate}>
+              Update API Key
+            </Button>
+          </Dialog.DialogClose>
+        </DialogContent>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
-}
+};
+
+export default ConfigurationDialog;

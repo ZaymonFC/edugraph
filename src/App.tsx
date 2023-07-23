@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import { useState } from "react";
 import { styled } from "./Stitches";
 import { Button } from "./components/BasicButton";
-import { Configuration, FieldSet } from "./components/Configuration";
+import ConfigurationDialog, { FieldSet } from "./components/Configuration";
 import { TextInput } from "./components/TextInput";
 import {
   goalAtom,
@@ -114,7 +114,8 @@ function App() {
   return (
     <Page>
       <h2>Edugraph</h2>
-      <Configuration />
+
+      <ConfigurationDialog />
 
       <br />
       <GetStarted />

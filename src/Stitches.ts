@@ -25,7 +25,7 @@ export const colors = {
   background: "rgb(14, 24, 65)",
 };
 
-export const { styled, css, getCssText } = createStitches({
+export const { styled, css, getCssText, keyframes } = createStitches({
   theme: {
     colors: {
       ...colors,
