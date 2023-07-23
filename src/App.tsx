@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { useAtomValue } from "jotai";
 import { useState } from "react";
 import { styled } from "./Stitches";
@@ -14,6 +10,10 @@ import {
   useAppDispatch,
   useHandleAppEvents,
 } from "./lib/Db";
+
+import "reactflow/dist/style.css";
+import LayoutFlow from "./components/LayoutFlow";
+import { ReactFlowProvider } from "reactflow";
 
 const Page = styled("div", {
   margin: 0,
@@ -62,6 +62,34 @@ const Goal = () => {
   return <div>Current goal: {goal}</div>;
 };
 
+function NodeGraph() {
+  const graph = useAtomValue(graphAtom);
+
+  if (!graph) return null;
+
+  const initialNodes = graph.nodes.map((node: string, idx: number) => ({
+    id: node,
+    position: { x: 0, y: idx * 100 },
+    data: { label: node },
+  }));
+
+  const initialEdges = graph.edges.map(
+    (edge: { source: string; target: string }) => ({
+      id: edge.source + edge.target,
+      source: edge.source,
+      target: edge.target,
+    })
+  );
+
+  console.log(initialNodes, initialEdges);
+
+  return (
+    <div style={{ width: "100vw", height: 800 }}>
+      <LayoutFlow initialNodes={initialNodes} initialEdges={initialEdges} />
+    </div>
+  );
+}
+
 function Graph() {
   const graph = useAtomValue(graphAtom);
 
@@ -69,12 +97,8 @@ function Graph() {
 
   return (
     <FieldSet>
-      <legend>Graph</legend>
-      <p>Nodes</p>
-      {graph.nodes.map((node: any) => (
-        <div key={node}>{node}</div>
-      ))}
-      <p>Edges</p>
+      <legend>Skills</legend>
+
       {graph.edges.map((edge: { source: string; target: string }) => (
         <div key={edge.source + edge.target}>
           {edge.source} -{">"} {edge.target}
@@ -95,9 +119,12 @@ function App() {
       <br />
       <GetStarted />
 
-      <Goal></Goal>
+      <Goal />
 
-      <Graph />
+      <ReactFlowProvider>
+        <Graph />
+        <NodeGraph />
+      </ReactFlowProvider>
     </Page>
   );
 }

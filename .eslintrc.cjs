@@ -1,5 +1,4 @@
 /* eslint-env node */
-
 module.exports = {
   root: true,
   env: { browser: true, es2020: true },
@@ -33,5 +32,10 @@ module.exports = {
       "warn",
       { additionalHooks: "(useSubscription)" },
     ],
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/no-unsafe-member-access": "warn",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unsafe-call": "warn",
   },
 };
