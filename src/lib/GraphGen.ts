@@ -23,6 +23,8 @@ export function makeLearningGraph(key: string, goal: string) {
     - Deployment
     - Testing
 
+    (This is not an exhaustive list, just an example.)
+
     Please return a graph in the following JSON format:
 
     \`\`\`
@@ -34,6 +36,8 @@ export function makeLearningGraph(key: string, goal: string) {
     }
     \`\`\`
 
+    Note: Every node must have at least one edge.
+    Note: Make sure that the edge makes sense in the context of the goal. If you can't create an edge for a node, don't include it.
 
     GOAL: ${goal}
 	`;

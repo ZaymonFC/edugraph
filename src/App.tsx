@@ -90,7 +90,7 @@ function NodeGraph() {
   );
 }
 
-function Graph() {
+function Skills() {
   const graph = useAtomValue(graphAtom);
 
   if (!graph) return null;
@@ -108,14 +108,25 @@ function Graph() {
   );
 }
 
+const HStack = styled("div", {
+  display: "flex",
+  flexDirection: "row",
+
+  alignItems: "center",
+
+  gap: "$4",
+});
+
 function App() {
   useHandleAppEvents();
 
   return (
     <Page>
-      <h2>Edugraph</h2>
+      <HStack>
+        <h2>Edugraph</h2>
 
-      <ConfigurationDialog />
+        <ConfigurationDialog />
+      </HStack>
 
       <br />
       <GetStarted />
@@ -123,8 +134,8 @@ function App() {
       <Goal />
 
       <ReactFlowProvider>
-        <Graph />
         <NodeGraph />
+        <Skills />
       </ReactFlowProvider>
     </Page>
   );

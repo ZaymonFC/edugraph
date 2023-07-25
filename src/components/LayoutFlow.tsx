@@ -9,9 +9,9 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 
-const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-
 const getLayoutedElements = (nodes: any, edges: any, options: any) => {
+  const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+
   g.setGraph({ rankdir: options.direction, ...options });
 
   edges.forEach((edge: any) => g.setEdge(edge.source, edge.target));
@@ -30,34 +30,28 @@ const getLayoutedElements = (nodes: any, edges: any, options: any) => {
 };
 
 const LayoutFlow = ({ initialNodes, initialEdges }: any) => {
-  const { fitView } = useReactFlow();
+  const layoutOptions = {
+    direction: "TB",
+    nodeSep: 200,
+    rankSep: 80,
+  };
 
-  const [nodes, setNodes] = useNodesState([]);
-  const [edges, setEdges] = useEdgesState([]);
+  const layouted = getLayoutedElements(
+    initialNodes,
+    initialEdges,
+    layoutOptions
+  );
 
-  // Reinitialise when nodes or edges change using useEffect
-  useEffect(() => {
-    const layoutOptions = {
-      direction: "TB",
-      nodeSep: 200,
-      rankSep: 80,
-    };
+  const { nodes, edges } = layouted;
 
-    const layouted = getLayoutedElements(
-      initialNodes,
-      initialEdges,
-      layoutOptions
-    );
-
-    setNodes([...layouted.nodes]);
-    setEdges([...layouted.edges]);
-
-    window.requestAnimationFrame(() => {
-      fitView();
-    });
-  }, [initialNodes, initialEdges, setNodes, setEdges, fitView]);
-
-  return <ReactFlow nodes={nodes} edges={edges} fitView></ReactFlow>;
+  return (
+    <ReactFlow
+      onNodeClick={(x, { data: { label } }) => console.log(x, label)}
+      nodes={nodes}
+      edges={edges}
+      fitView
+    ></ReactFlow>
+  );
 };
 
 export default LayoutFlow;
