@@ -2,7 +2,7 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback } from "react";
 import { Subject } from "rxjs";
 import { useSubscription } from "./useSubscription";
-import { makeLearningGraph } from "./GraphGen";
+import { makeLearningGraph } from "./Prompts";
 import { keyAtom } from "./Configuration";
 
 export type Db = {
@@ -77,6 +77,12 @@ export const useHandleAppEvents = () => {
             break;
           }
           case "explode-skill": {
+            // Take the current graph
+
+            // For a particular skill, decompose it into its subskills
+
+            // Add those subskills to the graph
+
             break;
           }
         }

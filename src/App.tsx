@@ -71,6 +71,7 @@ function NodeGraph() {
     id: node,
     position: { x: 0, y: idx * 100 },
     data: { label: node },
+    type: "CustomNode",
   }));
 
   const initialEdges = graph.edges.map(

@@ -46,3 +46,7 @@ export function makeLearningGraph(key: string, goal: string) {
 
   return completion(key, messages);
 }
+
+export function explodeSkill(graph: any, skill: string) {
+  return null;
+}
