@@ -14,7 +14,7 @@ export function completion(key: string, messages: ChatMessage[]) {
     body: JSON.stringify({
       model: "gpt-3.5-turbo",
       messages: messages,
-      temperature: 0.7,
+      temperature: 0.9,
     }),
   })
     .then((response) => response.json())

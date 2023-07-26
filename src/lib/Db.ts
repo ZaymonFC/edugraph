@@ -18,7 +18,8 @@ export const graphAtom = atom((get) => get(dbAtom).graph);
 
 type AppEvent =
   | { type: "supply-goal"; goal: string }
-  | { type: "build-graph"; goal: string };
+  | { type: "build-graph"; goal: string }
+  | { type: "explode-skill"; skill: string };
 
 const bus$Atom = atom<Subject<AppEvent>>(new Subject<AppEvent>());
 
@@ -73,6 +74,9 @@ export const useHandleAppEvents = () => {
               })
               .catch((e) => console.error(e));
 
+            break;
+          }
+          case "explode-skill": {
             break;
           }
         }
