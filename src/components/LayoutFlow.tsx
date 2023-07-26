@@ -3,7 +3,9 @@ import Dagre from "@dagrejs/dagre";
 import ReactFlow, { Handle, Position } from "reactflow";
 import "reactflow/dist/style.css";
 import { styled } from "../Stitches";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Button } from "./BasicButton";
+import { Subject, pipe, throttle, throttleTime } from "rxjs";
 
 const getLayoutedElements = (nodes: any, edges: any, options: any) => {
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -54,22 +56,67 @@ const NodeContainer = styled("div", {
   },
 });
 
+const ButtonStack = styled("div", {
+  position: "absolute",
+
+  top: -40,
+
+  display: "flex",
+  flexDirection: "row",
+
+  alignItems: "center",
+
+  gap: "$4",
+});
+
+// Hook that immediately updates the state and then throttles any further updates
+const useThrottledState = (initialValue: boolean, delay: number) => {
+  const [value, setValue] = useState(initialValue);
+  const [throttledValue, setThrottledValue] = useState(initialValue);
+
+  const s$ = useMemo(() => new Subject<boolean>(), []);
+
+  useEffect(() => s$.next(value), [value, s$]);
+
+  useEffect(() => {
+    const sub = s$
+      .pipe(throttleTime(delay, undefined, { leading: true, trailing: true }))
+      .subscribe((v) => {
+        setThrottledValue(v);
+      });
+
+    return () => sub.unsubscribe();
+  }, [s$, delay]);
+
+  return [throttledValue, setValue] as const;
+};
+
+const HideShow = styled("div", {
+  opacity: 0,
+  transition: "all 0.1s ease-in-out",
+  variants: { show: { true: { opacity: 1 }, false: { opacity: 0 } } },
+});
+
 const CustomNode = ({ data, ...other }: any) => {
   console.log(data, other);
 
-  const [isHovered, setIsHovered] = useState(false);
+  const [isHovered, setIsHovered] = useThrottledState(false, 300);
 
   return (
-    <>
+    <div
+      onMouseOver={() => setIsHovered(true)}
+      onMouseOut={() => setIsHovered(false)}
+    >
+      <HideShow show={isHovered}>
+        <ButtonStack>
+          <Button size="xs">Explain</Button>
+          <Button size="xs">Explode</Button>
+        </ButtonStack>
+      </HideShow>
       <Handle style={{ opacity: 0 }} type="target" position={Position.Top} />
-      <NodeContainer
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {data.label}
-      </NodeContainer>
+      <NodeContainer>{data.label}</NodeContainer>
       <Handle style={{ opacity: 0 }} type="source" position={Position.Bottom} />
-    </>
+    </div>
   );
 };
 

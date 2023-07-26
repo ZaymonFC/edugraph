@@ -10,6 +10,8 @@ export const Button = styled("button", {
   color: "#ff8f8f",
   backgroundColor: "rgba(0, 0, 0, 0.2)",
 
+  backdropFilter: "blur(4px)",
+
   border: "1px solid rgb(241, 200, 146)",
   boxShadow: "0px 4px 1px 0px rgb(241, 200, 146)",
 
@@ -25,6 +27,7 @@ export const Button = styled("button", {
   variants: {
     fullWidth: { true: { width: "100%" } },
     size: {
+      xs: { fontSize: "$1", paddingBlock: "$1" },
       sm: { fontSize: "$2" },
       md: { fontSize: "$3" },
     },

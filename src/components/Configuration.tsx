@@ -36,7 +36,7 @@ export const ConfigurationDialog = () => {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <Button>Open Configuration</Button>
+        <Button size="sm">Open Configuration</Button>
       </Dialog.Trigger>
       <Dialog.Portal>
         <DialogOverlay />
