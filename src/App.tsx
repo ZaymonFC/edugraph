@@ -82,8 +82,6 @@ function NodeGraph() {
     })
   );
 
-  console.log(initialNodes, initialEdges);
-
   return (
     <div style={{ width: "100vw", height: 800 }}>
       <LayoutFlow initialNodes={initialNodes} initialEdges={initialEdges} />

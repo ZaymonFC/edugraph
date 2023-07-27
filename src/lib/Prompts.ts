@@ -1,5 +1,12 @@
 import { completion, userMessage } from "./OpenAi";
 
+export type NodeId = string;
+
+export type Graph = {
+  nodes: NodeId[];
+  edges: { source: NodeId; target: NodeId }[];
+};
+
 export function makeLearningGraph(key: string, goal: string) {
   const prompt = `
     SIMULATION: You are a computational engine that, given a goal or field of study, you can determine
@@ -47,6 +54,33 @@ export function makeLearningGraph(key: string, goal: string) {
   return completion(key, messages);
 }
 
-export function explodeSkill(graph: any, skill: string) {
+export function explodeSkill(graph: Graph, skill: NodeId) {
   return null;
+}
+
+export function explainSkill(
+  key: string,
+  graph: Graph,
+  skill: NodeId,
+  goal: string
+) {
+  const connections = graph.edges.filter(
+    ({ source, target }) => source === skill || target === skill
+  );
+
+  const prompt = `
+    Please explain the skill ${skill} in the context of the goal ${goal}.
+
+    Look at the following connections in the skill graph and include context as to why ${skill}
+    relates to these other skills.
+
+    ${connections
+      .map(({ source, target }) => `${source} -> ${target}`)
+      .join("\n")}
+
+    `;
+
+  const messages = [userMessage(prompt)];
+
+  return completion(key, messages);
 }

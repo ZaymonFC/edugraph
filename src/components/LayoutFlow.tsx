@@ -6,6 +6,8 @@ import { styled } from "../Stitches";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "./BasicButton";
 import { Subject, pipe, throttle, throttleTime } from "rxjs";
+import { useAppDispatch } from "../lib/Db";
+import { NodeId } from "../lib/Prompts";
 
 const getLayoutedElements = (nodes: any, edges: any, options: any) => {
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -98,9 +100,15 @@ const HideShow = styled("div", {
 });
 
 const CustomNode = ({ data, ...other }: any) => {
-  console.log(data, other);
+  // console.log(data, other);
+
+  const dispatch = useAppDispatch();
 
   const [isHovered, setIsHovered] = useThrottledState(false, 300);
+
+  const explainSkill = () => {
+    dispatch({ type: "explain-skill", skill: data.label });
+  };
 
   return (
     <div
@@ -109,7 +117,9 @@ const CustomNode = ({ data, ...other }: any) => {
     >
       <HideShow show={isHovered}>
         <ButtonStack>
-          <Button size="xs">Explain</Button>
+          <Button size="xs" onClick={explainSkill}>
+            Explain
+          </Button>
           <Button size="xs">Explode</Button>
         </ButtonStack>
       </HideShow>
@@ -119,6 +129,8 @@ const CustomNode = ({ data, ...other }: any) => {
     </div>
   );
 };
+
+const customNodes = { CustomNode };
 
 const LayoutFlow = ({ initialNodes, initialEdges }: any) => {
   const layoutOptions = {
@@ -137,10 +149,10 @@ const LayoutFlow = ({ initialNodes, initialEdges }: any) => {
 
   return (
     <ReactFlow
-      onNodeClick={(x, { data: { label } }) => console.log(x, label)}
+      // onNodeClick={(x, { data: { label } }) => console.log(x, label)}
       nodes={nodes}
       edges={edges}
-      nodeTypes={{ CustomNode }}
+      nodeTypes={customNodes}
       fitView
     ></ReactFlow>
   );
