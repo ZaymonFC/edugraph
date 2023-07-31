@@ -8,7 +8,9 @@ import {
   goalAtom,
   graphAtom,
   useAppDispatch,
-  useHandleAppEvents,
+  useHandleIntentions,
+  useHandleEffects,
+  useAppLogging,
 } from "./lib/Db";
 
 import "reactflow/dist/style.css";
@@ -117,7 +119,10 @@ const HStack = styled("div", {
 });
 
 function App() {
-  useHandleAppEvents();
+  useHandleIntentions();
+  useHandleEffects();
+
+  useAppLogging();
 
   return (
     <Page>
