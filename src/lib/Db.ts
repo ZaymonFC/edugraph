@@ -5,18 +5,28 @@ import { keyAtom } from "./Configuration";
 import { Graph, NodeId, explainSkill, makeLearningGraph } from "./Prompts";
 import { useSubscription } from "./useSubscription";
 
+type RequestStatus = "loading" | "success" | "error";
+type RequestId = string;
+
 export type Db = {
+  // Goals and the graph
   goal?: string;
   graph?: Graph;
 
+  // Explanations
   explanations?: Record<string, string>;
   currentExplanation?: string;
+
+  // Machinery
+  requests?: Record<RequestId, RequestStatus>;
 };
 
 export const dbAtom = atom<Db>({});
 
+// Slice atoms
 export const goalAtom = atom((get) => get(dbAtom).goal);
 export const graphAtom = atom((get) => get(dbAtom).graph);
+export const requestsAtom = atom((get) => get(dbAtom).requests);
 
 type Intention =
   | { type: "supply-goal"; goal: string }
@@ -28,7 +38,12 @@ type Effect =
   | { type: "goal-supplied"; goal: string }
   | { type: "graph-built"; graph: Graph }
   | { type: "skill-exploded"; skill: NodeId }
-  | { type: "skill-explained"; skill: NodeId; explanation: string };
+  | { type: "skill-explained"; skill: NodeId; explanation: string }
+  | {
+      type: "request-status-updated";
+      requestId: RequestId;
+      status: RequestStatus;
+    };
 
 const intentions$Atom = atom<Subject<Intention>>(new Subject<Intention>());
 const effects$Atom = atom<Subject<Effect>>(new Subject<Effect>());
@@ -74,11 +89,21 @@ export const useHandleIntentions = () => {
               console.error("No key");
               return;
             }
+            dispatch({
+              type: "request-status-updated",
+              requestId: "make-graph",
+              status: "loading",
+            });
             makeLearningGraph(key, intention.goal)
               .then((graph) => {
                 const parsedGraph = JSON.parse(
                   graph.choices[0].message.content as unknown as string
                 );
+                dispatch({
+                  type: "request-status-updated",
+                  requestId: "make-graph",
+                  status: "success",
+                });
                 dispatch({ type: "graph-built", graph: parsedGraph });
               })
               .catch((e) => console.error(e));
@@ -94,6 +119,14 @@ export const useHandleIntentions = () => {
               return;
             }
 
+            const requestId = `explain-skill-${intention.skill}`;
+
+            dispatch({
+              type: "request-status-updated",
+              requestId,
+              status: "loading",
+            });
+
             explainSkill(key, db.graph, intention.skill, db.goal)
               .then((response) => {
                 const explanation = response.choices[0].message.content;
@@ -102,8 +135,19 @@ export const useHandleIntentions = () => {
                   skill: intention.skill,
                   explanation,
                 });
+                dispatch({
+                  type: "request-status-updated",
+                  requestId,
+                  status: "success",
+                });
               })
               .catch((e) => console.error(e));
+            break;
+          }
+          default: {
+            console.error("Unknown intention", intention);
+            console.warn('You forgot to handle it in "useHandleIntentions".');
+
             break;
           }
         }
@@ -146,6 +190,22 @@ export const useHandleEffects = () => {
             }));
             break;
           }
+          case "request-status-updated": {
+            setDb((db) => ({
+              ...db,
+              requests: {
+                ...db.requests,
+                [effect.requestId]: effect.status,
+              },
+            }));
+            break;
+          }
+          default: {
+            console.error("Unknown effect", effect);
+            console.warn('You forgot to handle it in "useHandleEffects".');
+
+            break;
+          }
         }
       }),
     [effects$, dispatch, setDb]
@@ -171,4 +231,16 @@ export const useAppLogging = () => {
       }),
     [intentions$]
   );
+};
+
+export const useThinkingIndicator = (): "thinking" | "idle" => {
+  const requests = useAtomValue(requestsAtom);
+
+  if (requests === undefined) return "idle";
+
+  const loading = Object.values(requests).some(
+    (requestStatus) => requestStatus === "loading"
+  );
+
+  return loading ? "thinking" : "idle";
 };

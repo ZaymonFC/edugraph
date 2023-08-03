@@ -11,7 +11,9 @@ import {
   useHandleIntentions,
   useHandleEffects,
   useAppLogging,
+  useThinkingIndicator,
 } from "./lib/Db";
+import { motion } from "framer-motion";
 
 import "reactflow/dist/style.css";
 import LayoutFlow from "./components/LayoutFlow";
@@ -62,6 +64,48 @@ const Goal = () => {
   if (!goal) return null;
 
   return <div>Current goal: {goal}</div>;
+};
+
+const ThinkingIndicator = () => {
+  const thinking = useThinkingIndicator();
+
+  if (thinking !== "thinking") return null;
+
+  const radius = 5;
+  const strokeWidth = 2;
+  const dimension = radius * 2 + strokeWidth;
+  const viewBox = `0 0 ${dimension} ${dimension}`;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        flexDirection: "row",
+        gap: 4,
+      }}
+    >
+      <p>Thinking...</p>
+      <motion.svg width={dimension} height={dimension} viewBox={viewBox}>
+        <motion.circle
+          cx={radius + strokeWidth / 2}
+          cy={radius + strokeWidth / 2}
+          r={radius}
+          strokeLinecap={"round"}
+          stroke="#fff"
+          strokeWidth={strokeWidth}
+          fillOpacity={0}
+          animate={{ pathLength: [3, 1, 0], pathOffset: [1, 0, 0] }}
+          transition={{
+            duration: 0.8, // duration in seconds
+            ease: "easeInOut",
+            repeat: Infinity, // infinitely repeating
+            repeatType: "mirror", // alternates between animation states
+          }}
+        />
+      </motion.svg>
+    </div>
+  );
 };
 
 function NodeGraph() {
@@ -136,6 +180,7 @@ function App() {
       <GetStarted />
 
       <Goal />
+      <ThinkingIndicator />
 
       <ReactFlowProvider>
         <NodeGraph />
