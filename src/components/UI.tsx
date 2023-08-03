@@ -35,6 +35,15 @@ export const DialogContent = styled(Dialog.Content, {
   padding: 25,
   animation: `${contentShow.toString()} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
   "&:focus": { outline: "none" },
+
+  variants: {
+    width: {
+      wide: {
+        width: "80vw",
+        maxWidth: "80vw",
+      },
+    },
+  },
 });
 
 export const DialogTitle = styled(Dialog.Title, {

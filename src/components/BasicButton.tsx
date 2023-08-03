@@ -18,6 +18,7 @@ export const Button = styled("button", {
   "&:hover": {
     boxShadow: "0px 3px 0px 0px rgb(241, 200, 146)",
     transform: "translate(0, 1px)",
+    cursor: "pointer",
   },
   "&:active": {
     boxShadow: "0px 1px 0px 0px rgb(241, 200, 146)",

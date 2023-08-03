@@ -18,6 +18,7 @@ import { motion } from "framer-motion";
 import "reactflow/dist/style.css";
 import LayoutFlow from "./components/LayoutFlow";
 import { ReactFlowProvider } from "reactflow";
+import { DevTools } from "./components/DevTools";
 
 const Page = styled("div", {
   margin: 0,
@@ -117,7 +118,7 @@ function NodeGraph() {
     id: node,
     position: { x: 0, y: idx * 100 },
     data: { label: node },
-    type: "CustomNode",
+    type: "SkillNode",
   }));
 
   const initialEdges = graph.edges.map(
@@ -181,6 +182,8 @@ function App() {
 
       <Goal />
       <ThinkingIndicator />
+
+      <DevTools />
 
       <ReactFlowProvider>
         <NodeGraph />

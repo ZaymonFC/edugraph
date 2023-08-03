@@ -78,7 +78,21 @@ export function explainSkill(
       .map(({ source, target }) => `${source} -> ${target}`)
       .join("\n")}
 
-    `;
+    NOTE: You can use the following markdown syntax to format your response:
+
+    # Heading 1
+    ## Heading 2
+
+    - List item 1
+    - List item 2
+
+    1. Numbered list item 1
+    2. Numbered list item 2
+
+    **Bold text**
+    *Italic text*
+
+    <br /> `;
 
   const messages = [userMessage(prompt)];
 

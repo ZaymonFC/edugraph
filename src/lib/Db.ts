@@ -26,6 +26,7 @@ export const dbAtom = atom<Db>({});
 // Slice atoms
 export const goalAtom = atom((get) => get(dbAtom).goal);
 export const graphAtom = atom((get) => get(dbAtom).graph);
+export const explanationsAtom = atom((get) => get(dbAtom).explanations);
 export const requestsAtom = atom((get) => get(dbAtom).requests);
 
 type Intention =
@@ -177,7 +178,7 @@ export const useHandleEffects = () => {
             break;
           }
           case "skill-exploded": {
-            // Logic for handling exploded skill goes here
+            console.error("Skill exploded not implemented");
             break;
           }
           case "skill-explained": {
