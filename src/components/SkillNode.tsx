@@ -7,8 +7,34 @@ import { styled } from "../Stitches";
 import { explanationsAtom, useAppDispatch } from "../lib/Db";
 import { Button } from "./BasicButton";
 import { Explanation } from "./Explanation";
-import { IconButton } from "./UI";
 import ReactMarkdown from "react-markdown";
+
+export const ExplanationButton = styled("button", {
+  all: "unset",
+  fontFamily: "inherit",
+  borderRadius: "100%",
+  height: 20,
+  width: 20,
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  position: "absolute",
+
+  padding: 0,
+  margin: 0,
+  border: "none",
+  boxShadow: "none",
+
+  backgroundColor: "$background",
+  color: "rgb(241, 200, 146)",
+
+  "&:hover": {
+    color: "rgb(255, 222, 179)",
+    transform: "scale(1.1)",
+  },
+
+  // "&:focus": { boxShadow: `0 0 0 2px ${violet.violet7}` },
+});
 
 const NodeContainer = styled("div", {
   position: "relative",
@@ -33,6 +59,8 @@ const NodeContainer = styled("div", {
   borderRadius: "$2",
 
   transition: "all 0.1s ease-in-out",
+
+  backdropFilter: "blur(4px)",
 
   "&:hover": {
     border: "1px solid rgb(255, 222, 179)",
@@ -83,9 +111,12 @@ const HideShow = styled("div", {
 });
 
 const ButtonPlacer = styled("div", {
-  position: "relative",
-  top: -100,
-  right: 0,
+  position: "absolute",
+  top: -12,
+  right: -2,
+
+  width: 25,
+  height: 20,
 });
 
 const StyledMarkDown = styled(ReactMarkdown, {
@@ -131,9 +162,9 @@ export const SkillNode = ({ data, ...other }: any) => {
           <ButtonPlacer>
             <Explanation
               trigger={
-                <IconButton>
-                  <InfoCircledIcon />
-                </IconButton>
+                <ExplanationButton>
+                  <InfoCircledIcon width={20} height={20} />
+                </ExplanationButton>
               }
             >
               <StyledMarkDown>{explanation}</StyledMarkDown>

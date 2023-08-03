@@ -71,7 +71,7 @@ export function explainSkill(
   const prompt = `
     Please explain the skill ${skill} in the context of the goal ${goal}.
 
-    Look at the following connections in the skill graph and include context as to why ${skill}
+    Pick the top two of the following related skills and include context as to why ${skill}
     relates to these other skills.
 
     ${connections
@@ -89,10 +89,13 @@ export function explainSkill(
     1. Numbered list item 1
     2. Numbered list item 2
 
-    **Bold text**
-    *Italic text*
+    **Bold text to add emphasis**
+    *Italic text for interest*
 
-    <br /> `;
+    <br />
+
+    \`key terms in backticks\`
+    `;
 
   const messages = [userMessage(prompt)];
 

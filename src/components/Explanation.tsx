@@ -1,5 +1,5 @@
-import { blackA, mauve, violet } from "@radix-ui/colors";
-import { Cross2Icon, InfoCircledIcon } from "@radix-ui/react-icons";
+import { violet } from "@radix-ui/colors";
+import { Cross2Icon } from "@radix-ui/react-icons";
 import * as Popover from "@radix-ui/react-popover";
 import { keyframes, styled } from "@stitches/react";
 
@@ -96,57 +96,3 @@ const PopoverClose = styled(Popover.Close, {
 });
 
 const Flex = styled("div", { display: "flex" });
-
-const IconButton = styled("button", {
-  all: "unset",
-  fontFamily: "inherit",
-  borderRadius: "100%",
-  height: 35,
-  width: 35,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: violet.violet11,
-  backgroundColor: "white",
-  boxShadow: `0 2px 10px ${blackA.blackA7}`,
-  "&:hover": { backgroundColor: violet.violet3 },
-  "&:focus": { boxShadow: `0 0 0 2px black` },
-});
-const Fieldset = styled("fieldset", {
-  all: "unset",
-  display: "flex",
-  gap: 20,
-  alignItems: "center",
-});
-
-const Label = styled("label", {
-  fontSize: 13,
-  color: violet.violet11,
-  width: 75,
-});
-
-const Input = styled("input", {
-  all: "unset",
-  width: "100%",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  flex: "1",
-  borderRadius: 4,
-  padding: "0 10px",
-  fontSize: 13,
-  lineHeight: 1,
-  color: violet.violet11,
-  boxShadow: `0 0 0 1px ${violet.violet7}`,
-  height: 25,
-
-  "&:focus": { boxShadow: `0 0 0 2px ${violet.violet8}` },
-});
-
-const Text = styled("p", {
-  margin: 0,
-  color: mauve.mauve12,
-  fontSize: 15,
-  lineHeight: "19px",
-  fontWeight: 500,
-});

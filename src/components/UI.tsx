@@ -107,8 +107,6 @@ export const IconButton = styled("button", {
   justifyContent: "center",
   color: violet.violet11,
   position: "absolute",
-  top: 10,
-  right: 10,
   "&:hover": { backgroundColor: violet.violet4 },
   "&:focus": { boxShadow: `0 0 0 2px ${violet.violet7}` },
 });
