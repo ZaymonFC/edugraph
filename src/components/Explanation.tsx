@@ -46,9 +46,20 @@ const slideLeftAndFade = keyframes({
 
 const PopoverContent = styled(Popover.Content, {
   borderRadius: 4,
-  padding: 20,
+  padding: "$7",
   width: "70vh",
   maxHeight: "50vh",
+
+  p: {
+    fontFamily: "Georgia, serif",
+  },
+
+  "h1, h2, h3": {
+    fontFamily: "EB Garamond, serif",
+    marginBlock: 10,
+  },
+
+  margin: "$5",
 
   overflow: "scroll",
 

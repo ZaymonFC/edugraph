@@ -9,6 +9,9 @@ type RequestStatus = "loading" | "success" | "error";
 type RequestId = string;
 
 export type Db = {
+  // Version
+  version: number;
+
   // Goals and the graph
   goal?: string;
   graph?: Graph;
@@ -21,7 +24,7 @@ export type Db = {
   requests?: Record<RequestId, RequestStatus>;
 };
 
-export const dbAtom = atom<Db>({});
+export const dbAtom = atom<Db>({ version: 0 });
 
 // Slice atoms
 export const goalAtom = atom((get) => get(dbAtom).goal);
@@ -35,7 +38,7 @@ type Intention =
   | { type: "explode-skill"; skill: NodeId }
   | { type: "explain-skill"; skill: NodeId };
 
-type Effect =
+export type Effect =
   | { type: "goal-supplied"; goal: string }
   | { type: "graph-built"; graph: Graph }
   | { type: "skill-exploded"; skill: NodeId }
@@ -47,7 +50,7 @@ type Effect =
     };
 
 const intentions$Atom = atom<Subject<Intention>>(new Subject<Intention>());
-const effects$Atom = atom<Subject<Effect>>(new Subject<Effect>());
+export const effects$Atom = atom<Subject<Effect>>(new Subject<Effect>());
 
 export const useAppDispatch = () => {
   const intentions$ = useAtomValue(intentions$Atom);

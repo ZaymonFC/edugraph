@@ -136,24 +136,6 @@ function NodeGraph() {
   );
 }
 
-function Skills() {
-  const graph = useAtomValue(graphAtom);
-
-  if (!graph) return null;
-
-  return (
-    <FieldSet>
-      <legend>Skills</legend>
-
-      {graph.edges.map((edge: { source: string; target: string }) => (
-        <div key={edge.source + edge.target}>
-          {edge.source} -{">"} {edge.target}
-        </div>
-      ))}
-    </FieldSet>
-  );
-}
-
 const HStack = styled("div", {
   display: "flex",
   flexDirection: "row",
@@ -187,7 +169,6 @@ function App() {
 
       <ReactFlowProvider>
         <NodeGraph />
-        <Skills />
       </ReactFlowProvider>
     </Page>
   );
