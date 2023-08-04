@@ -162,7 +162,19 @@ export const useHandleIntentions = () => {
 
 export const useHandleEffects = () => {
   const effects$ = useAtomValue(effects$Atom);
-  const setDb = useSetAtom(dbAtom);
+  const set = useSetAtom(dbAtom);
+
+  const setDb = useCallback(
+    (stateUpdate: (db: Db) => Db) => {
+      set((db) => {
+        const updatedDb = stateUpdate(db);
+        return { ...updatedDb, version: updatedDb.version + 1 };
+      });
+
+      /// TODO: Move version tracking here. Only place we have access to provenance.
+    },
+    [set]
+  );
 
   const dispatch = useAppDispatch();
 

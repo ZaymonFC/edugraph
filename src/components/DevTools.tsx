@@ -56,8 +56,7 @@ const ScrollFlex = styled("div", {
   gap: "$4",
 });
 
-const prettyStringifyJson = (json: any) =>
-  JSON.stringify(json, null, 2).replace(/"([^"]+)":/g, "$1:");
+const prettyStringifyJson = (json: any) => JSON.stringify(json, null, 2);
 
 const HoverContainer = styled("div", {
   borderRadius: 4,
@@ -94,7 +93,7 @@ export const VersionExplorer = ({ versions }: { versions: Version[] }) => {
             hideLineNumbers={true}
             splitView={false}
             useDarkTheme={true}
-            compareMethod={DiffMethod.WORDS}
+            compareMethod={DiffMethod.CHARS}
           />
         </ScrollFlex>
       ) : (
