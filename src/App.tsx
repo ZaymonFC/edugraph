@@ -5,14 +5,13 @@ import { Button } from "./components/BasicButton";
 import ConfigurationDialog, { FieldSet } from "./components/Configuration";
 import { TextInput } from "./components/TextInput";
 import {
-  goalAtom,
-  graphAtom,
   useAppDispatch,
   useHandleIntentions,
   useHandleEffects,
   useAppLogging,
   useThinkingIndicator,
-} from "./lib/Db";
+} from "./lib/useDb";
+import { goalAtom, graphAtom } from "./lib/Db";
 import { motion } from "framer-motion";
 
 import "reactflow/dist/style.css";

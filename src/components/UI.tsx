@@ -96,21 +96,6 @@ export const Button = styled("button", {
   },
 });
 
-export const IconButton = styled("button", {
-  all: "unset",
-  fontFamily: "inherit",
-  borderRadius: "100%",
-  height: 25,
-  width: 25,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: violet.violet11,
-  position: "absolute",
-  "&:hover": { backgroundColor: violet.violet4 },
-  "&:focus": { boxShadow: `0 0 0 2px ${violet.violet7}` },
-});
-
 export const Fieldset = styled("fieldset", {
   all: "unset",
   display: "flex",

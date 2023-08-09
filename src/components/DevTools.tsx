@@ -1,14 +1,12 @@
-import { useAtomValue } from "jotai";
-import { Db, dbAtom } from "../lib/Db";
-import ReactJson from "react-json-view";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Button } from "./BasicButton";
-import { DialogOverlay, DialogContent, DialogTitle } from "./UI";
-import { styled } from "../Stitches";
 import React, { ComponentProps } from "react";
-import { Version, useVersions } from "../lib/useVersions";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
-import { Highlight, themes } from "prism-react-renderer";
+import ReactJson from "react-json-view";
+import { styled } from "../Stitches";
+import { Version, versionsAtom } from "../lib/useVersions";
+import { Button } from "./BasicButton";
+import { DialogContent, DialogOverlay, DialogTitle } from "./UI";
+import { useAtomValue } from "jotai";
 
 const BottomRight = styled("div", {
   position: "fixed",
@@ -48,10 +46,13 @@ const GridContainer = styled("div", {
 });
 
 const ScrollFlex = styled("div", {
+  paddingRight: "$5",
   overflow: "scroll",
 
   display: "flex",
   flexDirection: "column",
+
+  scrollSnapType: "y mandatory",
 
   gap: "$4",
 });
@@ -61,6 +62,9 @@ const prettyStringifyJson = (json: any) => JSON.stringify(json, null, 2);
 const HoverContainer = styled("div", {
   borderRadius: 4,
   padding: "$4",
+
+  scrollSnapAlign: "start",
+
   border: "2px solid rgba(255, 255, 255, 0.2)",
   transition: "all 0.1s ease-in-out",
   "&:hover": {
@@ -127,7 +131,7 @@ export const VersionExplorer = ({ versions }: { versions: Version[] }) => {
 };
 
 export const DevTools = () => {
-  const versions = useVersions();
+  const versions = useAtomValue(versionsAtom);
 
   return (
     <Dialog.Root>
