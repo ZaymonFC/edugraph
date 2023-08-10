@@ -10,9 +10,10 @@ import {
   Intention,
   Effect,
 } from "./Db";
-import { makeLearningGraph, explainSkill } from "./Prompts";
+import { explainSkill } from "./Prompts";
 import { useSubscription } from "./useSubscription";
 import { versionsAtom } from "./useVersions";
+import { useBuildGraph } from "./GraphGeneration";
 
 export const useAppDispatch = () => {
   const intentions$ = useAtomValue(intentions$Atom);
@@ -42,6 +43,8 @@ export const useHandleIntentions = () => {
 
   const db = useAtomValue(dbAtom);
 
+  const buildGraph = useBuildGraph();
+
   useSubscription(
     () =>
       intentions$.subscribe((intention) => {
@@ -60,19 +63,20 @@ export const useHandleIntentions = () => {
               requestId: "make-graph",
               status: "loading",
             });
-            makeLearningGraph(key, intention.goal)
+
+            buildGraph(intention.goal)
               .then((graph) => {
-                const parsedGraph = JSON.parse(
-                  graph.choices[0].message.content as unknown as string
-                );
+                if (!graph) return;
+
                 dispatch({
                   type: "request-status-updated",
                   requestId: "make-graph",
                   status: "success",
                 });
-                dispatch({ type: "graph-built", graph: parsedGraph });
+                dispatch({ type: "graph-built", graph });
               })
               .catch((e) => console.error(e));
+
             break;
           }
           case "explode-skill": {
@@ -107,7 +111,14 @@ export const useHandleIntentions = () => {
                   status: "success",
                 });
               })
-              .catch((e) => console.error(e));
+              .catch((e) => {
+                dispatch({
+                  type: "request-status-updated",
+                  requestId,
+                  status: "error",
+                });
+                console.error(e);
+              });
             break;
           }
           default: {
@@ -118,7 +129,7 @@ export const useHandleIntentions = () => {
           }
         }
       }),
-    [intentions$, dispatch, key, db]
+    [intentions$, dispatch, key, db, buildGraph]
   );
 };
 

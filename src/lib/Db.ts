@@ -1,10 +1,6 @@
-import { atom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback } from "react";
+import { atom } from "jotai";
 import { Subject } from "rxjs";
-import { keyAtom } from "./Configuration";
-import { Graph, NodeId, explainSkill, makeLearningGraph } from "./Prompts";
-import { useSubscription } from "./useSubscription";
-import { versionsAtom } from "./useVersions";
+import { Graph, NodeId } from "./GraphGeneration";
 
 type RequestStatus = "loading" | "success" | "error";
 type RequestId = string;
@@ -55,4 +51,5 @@ export type Effect =
 export const intentions$Atom = atom<Subject<Intention>>(
   new Subject<Intention>()
 );
+
 export const effects$Atom = atom<Subject<Effect>>(new Subject<Effect>());

@@ -74,9 +74,7 @@ const HoverContainer = styled("div", {
 });
 
 export const VersionExplorer = ({ versions }: { versions: Version[] }) => {
-  const [diff, setDiff] = React.useState<
-    { old: string; new: string } | undefined
-  >();
+  const [diff, setDiff] = React.useState<{ old: string; new: string } | undefined>();
 
   const selectDiff = (idx: number) => {
     const old = versions[idx - 1][0];
@@ -103,7 +101,7 @@ export const VersionExplorer = ({ versions }: { versions: Version[] }) => {
       ) : (
         versions.map(([db, _], idx) => {
           if (idx === 0) {
-            return <ReactJson src={db} {...jsonOptions} />;
+            return <ReactJson key={idx} src={db} {...jsonOptions} />;
           }
         })
       )}
@@ -116,10 +114,10 @@ export const VersionExplorer = ({ versions }: { versions: Version[] }) => {
             const { type, ...rest } = effect;
 
             return (
-              <div onMouseEnter={() => selectDiff(idx)}>
+              <div key={idx} onMouseEnter={() => selectDiff(idx)}>
                 <HoverContainer>
                   <p>{type}</p>
-                  <ReactJson key={idx} src={rest} {...jsonOptions} />
+                  <ReactJson src={rest} {...jsonOptions} />
                 </HoverContainer>
               </div>
             );
