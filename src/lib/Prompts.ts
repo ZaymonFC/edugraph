@@ -8,39 +8,35 @@ export function explodeSkill(graph: Graph, skill: NodeId) {
 export function explainSkill(
   key: string,
   graph: Graph,
-  skill: NodeId,
-  goal: string
+  concept: NodeId,
+  context: string
 ) {
   const connections = graph.edges.filter(
-    ([source, target]) => source === skill || target === skill
+    ([source, target]) => source === concept || target === concept
   );
 
+  const nodes = connections.map(([source, target]) =>
+    source === concept ? target : source
+  );
+
+  const distinctNodes = [...new Set(nodes)];
+
   const prompt = `
-    Please explain the skill ${skill} in the context of the goal ${goal}.
+Context: ${context}
+Concept to explain: ${concept}
+Related concepts: ${distinctNodes.join(", ")}
+Style: Concise, informative, educational; relate back to the context where appropriate
 
-    Pick the top two of the following related skills and include context as to why ${skill}
-    relates to these other skills.
+Heading names in the template can be customized as needed.
+Emphasize key terms and key words in __bold__ as you deem appropriate.
 
-    ${connections.map(([source, target]) => `${source} -> ${target}`).join("\n")}
+Follow this structure:
+# Heading (name of the concept)
+Define and explain the concept, it's origins and history.
 
-    NOTE: You can use the following markdown syntax to format your response:
+Related concepts (only show if there is anything in the related concepts field above).
 
-    # Heading 1
-    ## Heading 2
-
-    - List item 1
-    - List item 2
-
-    1. Numbered list item 1
-    2. Numbered list item 2
-
-    **Bold text to add emphasis**
-    *Italic text for interest*
-
-    <br />
-
-    \`key terms in backticks\`
-    `;
+Further learning (if applicable; include directions for additional study).`;
 
   const messages = [userMessage(prompt)];
 
