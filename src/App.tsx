@@ -120,13 +120,11 @@ function NodeGraph() {
     type: "SkillNode",
   }));
 
-  const initialEdges = graph.edges.map(
-    (edge: { source: string; target: string }) => ({
-      id: edge.source + edge.target,
-      source: edge.source,
-      target: edge.target,
-    })
-  );
+  const initialEdges = graph.edges.map(([source, target]) => ({
+    id: source + target,
+    source: source,
+    target: target,
+  }));
 
   return (
     <div style={{ width: "100vw", height: 800 }}>

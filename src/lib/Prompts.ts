@@ -12,7 +12,7 @@ export function explainSkill(
   goal: string
 ) {
   const connections = graph.edges.filter(
-    ({ source, target }) => source === skill || target === skill
+    ([source, target]) => source === skill || target === skill
   );
 
   const prompt = `
@@ -21,9 +21,7 @@ export function explainSkill(
     Pick the top two of the following related skills and include context as to why ${skill}
     relates to these other skills.
 
-    ${connections
-      .map(({ source, target }) => `${source} -> ${target}`)
-      .join("\n")}
+    ${connections.map(([source, target]) => `${source} -> ${target}`).join("\n")}
 
     NOTE: You can use the following markdown syntax to format your response:
 

@@ -1,31 +1,32 @@
 import { useAtomValue } from "jotai";
 import { keyAtom } from "./Configuration";
 import { useCallback } from "react";
-import { completion, conversation, reply, userMessage, response } from "./OpenAi";
+import { completion, conversation, userMessage, response } from "./OpenAi";
+import { z } from "zod";
+import { extractJSONBlocks } from "./parsing";
 
 const prompts = {
   buildCandidates: (data: { goal: string }) => `
 SIMULATION: You are a computational engine that generates a concept map for the following topic: ${data.goal}
 
-Please return a graph in the following JSON format:
+Please return a graph in the following JSON format, including the markdown fence.
 
-\`\`\`
+\`\`\`json
 {
-"nodes": [ "example", "node", "names" ],
-"edges": [
-{ "source": "example", "target": "node" },
-{ "source": "node", "target": "names" }
+  "metadata": { "candidate": <iteration number> },
+  "nodes": [ "example", "node", "names" ],
+  "edges": [["example", "node"], ["node", "names"]]
 }
 \`\`\`
 
 - Nodes are the concepts, and are single strings.
-- Edges are the relationships between concepts, and are an array of objects with a \`source\` and \`target\` property.
+- Edges are the relationships between concepts, and are an array of tuples where the first element is the source, and the second element is the target.
 
 Generate a comprehensive graph and then grade it on the following criteria:
 
 - How well organised is the graph? (0-10)
-- How comprehensive is the graph? (0-10)
 - Are there sources that could point to more targets (more sub concepts)? (0-10)
+- Is the graph comprehensive? (0-10)
 - Is the graph arranged in the order that these concepts would typically be learned? (0-10)
 
 
@@ -35,18 +36,50 @@ Using the 5 bullet list, incorporate this feedback by generating another candida
 
 Continue this process 2 more times.
 
-Calculate the total rank for each candidate, show the totals.
+DON'T add feedback for the final iteration.
 
-Pick the best one based on highest score`,
+Tally up the scores of each candidate in the following JSON format:
+
+\`\`\`json
+[
+  {"candidate": 1, scores: [...], total: ... },
+  ...
+]
+\`\`\`
+`,
 
   selectCandidate: "Return just the JSON of the highest ranked candidate.",
 };
 
 export type NodeId = string;
 
-export type Graph = {
-  nodes: NodeId[];
-  edges: { source: NodeId; target: NodeId }[];
+const GraphSchema = z.object({
+  metadata: z.object({
+    candidate: z.number(),
+  }),
+  nodes: z.array(z.string()),
+  edges: z.array(z.tuple([z.string(), z.string()])),
+});
+
+export type Graph = z.infer<typeof GraphSchema>;
+
+const CandidateScoreSchema = z.object({
+  candidate: z.number(),
+  scores: z.array(z.number()),
+  total: z.number(),
+});
+
+const CandidateScoresSchema = z.array(CandidateScoreSchema);
+
+type CandidateScores = z.infer<typeof CandidateScoresSchema>;
+
+const highScore = (scores: CandidateScores) => {
+  if (scores.length === 0) {
+    throw new Error("No scores");
+  }
+
+  const sorted = scores.sort((a, b) => b.total - a.total);
+  return sorted[0].candidate;
 };
 
 export const useBuildGraph = () => {
@@ -63,16 +96,51 @@ export const useBuildGraph = () => {
 
       const initialMessage = userMessage(prompts.buildCandidates(data));
 
-      const rankedCandidates = await completion(key, conversation(initialMessage));
+      const rankedCandidates = await completion(
+        key,
+        conversation(initialMessage)
+      ).then(response);
 
-      const chat = conversation(initialMessage, response(rankedCandidates));
+      console.log(rankedCandidates.content);
 
-      const chosenGraphMessage = await reply(key, chat, prompts.selectCandidate);
+      const blobs = extractJSONBlocks(rankedCandidates.content);
 
-      const chosenGraph = response(chosenGraphMessage).content;
+      const candidates = blobs
+        .map((blob: any) => {
+          try {
+            return GraphSchema.parse(blob);
+          } catch (e) {
+            return undefined;
+          }
+        })
+        .filter((x) => x !== undefined) as Graph[];
 
-      return JSON.parse(chosenGraph) as Graph;
+      console.log(candidates);
+
+      const scores = findScores(blobs);
+
+      if (!scores) {
+        throw new Error("No scores");
+      }
+
+      const chosenGraph = highScore(scores);
+
+      return candidates.find((x) => x.metadata.candidate === chosenGraph);
     },
     [key]
   );
 };
+
+export function findScores(blobs: any[]): CandidateScores | undefined {
+  return (
+    blobs
+      .map((blob: any) => {
+        try {
+          return CandidateScoresSchema.parse(blob);
+        } catch (e) {
+          return undefined;
+        }
+      })
+      .filter((x) => x !== undefined) as CandidateScores[]
+  )[0];
+}
