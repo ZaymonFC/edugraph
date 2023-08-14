@@ -115,8 +115,6 @@ export const useBuildGraph = () => {
         })
         .filter((x) => x !== undefined) as Graph[];
 
-      console.log(candidates);
-
       const scores = findScores(blobs);
 
       if (!scores) {
@@ -125,7 +123,15 @@ export const useBuildGraph = () => {
 
       const chosenGraph = highScore(scores);
 
-      return candidates.find((x) => x.metadata.candidate === chosenGraph);
+      const bestCandidate = candidates.find(
+        (x) => x.metadata.candidate === chosenGraph
+      );
+
+      if (!bestCandidate) {
+        throw new Error("No best candidate");
+      }
+
+      return bestCandidate;
     },
     [key]
   );
