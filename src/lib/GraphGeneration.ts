@@ -6,10 +6,10 @@ import { z } from "zod";
 import { extractJSONBlocks } from "./parsing";
 
 const prompts = {
-  buildCandidates: (data: { goal: string }) => `
-SIMULATION: You are a computational engine that generates a concept map for the following topic: ${data.goal}
+  buildCandidates: (data: { concept: string }) => `
+SIMULATION: You are a computational engine that generates a concept map for the following topic: ${data.concept}
 
-Please return a graph in the following JSON format, including the markdown fence.
+Candidate concept maps must be supplied in the following JSON format, including the markdown fence.
 
 \`\`\`json
 {
@@ -22,6 +22,8 @@ Please return a graph in the following JSON format, including the markdown fence
 - Nodes are the concepts, and are single strings.
 - Edges are the relationships between concepts, and are an array of tuples where the first element is the source, and the second element is the target.
 
+Show your working! Don't just reply with the JSON.
+
 Generate a comprehensive graph and then grade it on the following criteria:
 
 - How well organised is the graph? (0-10)
@@ -29,14 +31,13 @@ Generate a comprehensive graph and then grade it on the following criteria:
 - Is the graph comprehensive? (0-10)
 - Is the graph arranged in the order that these concepts would typically be learned? (0-10)
 
+VERY CONCISELY, think of two bullet points for each question that could improve the score.
 
-For each question, add concise reasoning as to why you picked that score. Make a concise 5 bullet list of specific changes that could be made to improve the score.
-
-Using the 5 bullet list, incorporate this feedback by generating another candidate, making sure to merge the result with the earlier candidate.
+Using the improvement points, create a new candidate making sure to merge the result with the earlier candidate.
 
 Continue this process 2 more times.
 
-DON'T add feedback for the final iteration.
+Do not add feedback to the final candidate.
 
 Tally up the scores of each candidate in the following JSON format:
 
@@ -86,24 +87,22 @@ export const useBuildGraph = () => {
   const key = useAtomValue(keyAtom);
 
   return useCallback(
-    async (goal: string): Promise<Graph | undefined> => {
+    async (concept: string): Promise<Graph | undefined> => {
       if (!key) {
-        console.error("API KEY NOT SET (build graph)");
-        return;
+        throw new Error("API KEY NOT SET (build graph)");
       }
 
-      const data = { goal };
+      const data = { concept };
 
       const initialMessage = userMessage(prompts.buildCandidates(data));
 
-      const rankedCandidates = await completion(
-        key,
-        conversation(initialMessage)
-      ).then(response);
+      const rankedCandidates = await completion(key, conversation(initialMessage));
 
-      console.log(rankedCandidates.content);
+      const reply = response(rankedCandidates);
 
-      const blobs = extractJSONBlocks(rankedCandidates.content);
+      console.log("reply", reply.content);
+
+      const blobs = extractJSONBlocks(reply.content);
 
       const candidates = blobs
         .map((blob: any) => {
@@ -131,7 +130,15 @@ export const useBuildGraph = () => {
         throw new Error("No best candidate");
       }
 
-      return bestCandidate;
+      const nodesInEdges = new Set(
+        bestCandidate.edges.flatMap(([source, target]) => [source, target])
+      );
+
+      return {
+        ...bestCandidate,
+        edges: bestCandidate.edges.filter(([source, target]) => source !== target),
+        nodes: bestCandidate.nodes.filter((node) => nodesInEdges.has(node)),
+      };
     },
     [key]
   );

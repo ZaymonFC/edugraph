@@ -11,7 +11,7 @@ import {
   useAppLogging,
   useThinkingIndicator,
 } from "./lib/useDb";
-import { goalAtom, graphAtom } from "./lib/Db";
+import { conceptAtom, graphAtom } from "./lib/Db";
 import { motion } from "framer-motion";
 
 import "reactflow/dist/style.css";
@@ -29,13 +29,13 @@ const Page = styled("div", {
 });
 
 function GetStarted() {
-  const [goal, setGoal] = useState("");
+  const [concept, setConcept] = useState("");
 
   const dispatch = useAppDispatch();
 
   const handleGetStarted = () => {
-    dispatch({ type: "supply-goal", goal });
-    setGoal("");
+    dispatch({ type: "supply-concept", concept });
+    setConcept("");
   };
 
   const handleOnEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -46,10 +46,10 @@ function GetStarted() {
 
   return (
     <FieldSet>
-      <legend>Goal</legend>
+      <legend>Concept</legend>
       <TextInput
-        value={goal}
-        onChange={(v) => setGoal(v.target.value)}
+        value={concept}
+        onChange={(v) => setConcept(v.target.value)}
         onKeyDown={handleOnEnter}
         placeholder="What do you want to learn?"
       />
@@ -58,12 +58,12 @@ function GetStarted() {
   );
 }
 
-const Goal = () => {
-  const goal = useAtomValue(goalAtom);
+const CurrentConcept = () => {
+  const concept = useAtomValue(conceptAtom);
 
-  if (!goal) return null;
+  if (!concept) return null;
 
-  return <div>Current goal: {goal}</div>;
+  return <div>Current concept: {concept}</div>;
 };
 
 const ThinkingIndicator = () => {
@@ -159,7 +159,7 @@ function App() {
       <br />
       <GetStarted />
 
-      <Goal />
+      <CurrentConcept />
       <ThinkingIndicator />
 
       <DevTools />

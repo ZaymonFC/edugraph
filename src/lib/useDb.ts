@@ -49,8 +49,8 @@ export const useHandleIntentions = () => {
     () =>
       intentions$.subscribe((intention) => {
         switch (intention.type) {
-          case "supply-goal": {
-            dispatch({ type: "goal-supplied", goal: intention.goal });
+          case "supply-concept": {
+            dispatch({ type: "concept-supplied", concept: intention.concept });
             break;
           }
           case "build-graph": {
@@ -64,7 +64,7 @@ export const useHandleIntentions = () => {
               status: "loading",
             });
 
-            buildGraph(intention.goal)
+            buildGraph(intention.concept)
               .then((graph) => {
                 if (!graph) return;
 
@@ -84,8 +84,8 @@ export const useHandleIntentions = () => {
             break;
           }
           case "explain-skill": {
-            if (!key || !db.graph || !db.goal) {
-              console.error("No key, graph, or goal found to explain skill.");
+            if (!key || !db.graph || !db.concept) {
+              console.error("No key, graph, or concept found to explain skill.");
               return;
             }
 
@@ -97,7 +97,7 @@ export const useHandleIntentions = () => {
               status: "loading",
             });
 
-            explainSkill(key, db.graph, intention.skill, db.goal)
+            explainSkill(key, db.graph, intention.skill, db.concept)
               .then((response) => {
                 const explanation = response.choices[0].message.content;
                 dispatch({
@@ -167,10 +167,10 @@ export const useHandleEffects = () => {
         const setDb = mkSetDb(effect);
 
         switch (effect.type) {
-          case "goal-supplied": {
-            const { goal } = effect;
-            setDb((db) => ({ ...db, goal }));
-            dispatch({ type: "build-graph", goal });
+          case "concept-supplied": {
+            const { concept } = effect;
+            setDb((db) => ({ ...db, concept }));
+            dispatch({ type: "build-graph", concept });
             break;
           }
           case "graph-built": {

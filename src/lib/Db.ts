@@ -9,8 +9,8 @@ export type Db = {
   // Version
   version: number;
 
-  // Goals and the graph
-  goal?: string;
+  // concept and the graph
+  concept?: string;
   graph?: Graph;
 
   // Explanations
@@ -26,19 +26,19 @@ export const initialDbState: Db = { version: 0 };
 export const dbAtom = atom<Db>(initialDbState);
 
 // Slice atoms
-export const goalAtom = atom((get) => get(dbAtom).goal);
+export const conceptAtom = atom((get) => get(dbAtom).concept);
 export const graphAtom = atom((get) => get(dbAtom).graph);
 export const explanationsAtom = atom((get) => get(dbAtom).explanations);
 export const requestsAtom = atom((get) => get(dbAtom).requests);
 
 export type Intention =
-  | { type: "supply-goal"; goal: string }
-  | { type: "build-graph"; goal: string }
+  | { type: "supply-concept"; concept: string }
+  | { type: "build-graph"; concept: string }
   | { type: "explode-skill"; skill: NodeId }
   | { type: "explain-skill"; skill: NodeId };
 
 export type Effect =
-  | { type: "goal-supplied"; goal: string }
+  | { type: "concept-supplied"; concept: string }
   | { type: "graph-built"; graph: Graph }
   | { type: "skill-exploded"; skill: NodeId }
   | { type: "skill-explained"; skill: NodeId; explanation: string }
@@ -48,8 +48,6 @@ export type Effect =
       status: RequestStatus;
     };
 
-export const intentions$Atom = atom<Subject<Intention>>(
-  new Subject<Intention>()
-);
+export const intentions$Atom = atom<Subject<Intention>>(new Subject<Intention>());
 
 export const effects$Atom = atom<Subject<Effect>>(new Subject<Effect>());
